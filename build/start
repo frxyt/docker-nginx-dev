@@ -9,9 +9,7 @@ set -eE
 
 # Handle errors
 trap_err() {
-    export FRX_DOCKER_STARTED=-1
     echo "[!] Error: /frx/start:$1"
-    cat /frx/start.log
 }
 trap 'trap_err $LINENO' ERR
 
