@@ -1,0 +1,36 @@
+name: Build Docker images
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/build.yml
+      - ./build/**
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: List available platforms for Buildx
+        run: |
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push - frxyt/nginx-dev
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile
+          push: true
+          tags: |
+            frxyt/nginx-dev
